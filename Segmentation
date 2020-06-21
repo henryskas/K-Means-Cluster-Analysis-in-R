@@ -1,0 +1,63 @@
+# Welcome for everyone
+
+# K-means clustering (MacQueen 1967) is one of the most commonly used unsupervised machine learning algorithm for 
+# partitioning a given data set into a set of k groups
+# where k represents the number of groups pre-specified by the analyst.
+
+# Data Link https://s3-api.us-geo.objectstorage.softlayer.net/cf-courses-data/CognitiveClass/ML0101ENv3/labs/Cust_Segmentation.csv
+ 
+ ------------------------------------------------------------
+data("custgmentation")  # Loading the data set
+df <- scale(custgmentation) # Scaling the data
+
+# View the firt 3 rows of the data
+head(df, n = 3)
+-------------------------------------------------------------
+As k-means clustering algorithm starts with k randomly selected centroids, it’s always recommended to use the set.seed() function in order to set a seed for R’s random number generator. 
+# Compute k-means with k = 3
+set.seed(123)
+km.res <- kmeans(df, 3, nstart = 25)
+#nstart: The number of random starting partitions when centers is a number. Trying nstart > 1 is often recommended.
+-------------------------------------------------------------
+# Print the results
+print(km.res)
+-------------------------------------------------------------
+#It’s possible to compute the mean of each variables by clusters using the original data:
+aggregate(custgmentation, by=list(cluster=km.res$cluster), mean)
+-------------------------------------------------------------
+#If you want to add the point classifications to the original data, use this:
+dd <- cbind(custgmentation, cluster = km.res$cluster)
+head(dd)
+-------------------------------------------------------------
+#kmeans() function returns a list of components, including (cluster,centers,totss,withinss,tot.withinss,betweenss,size)
+# Cluster number for each of the observations
+km.res$cluster
+head(km.res$cluster, 4)
+# Cluster size
+km.res$size
+# Cluster means
+km.res$centers
+-------------------------------------------------------------
+#To create a beautiful graph of the clusters generated with the kmeans() function, will use the ggplot2 and factoextra package.
+install.packages("ggplot2")
+library(ggplot2)
+install.packages("factoextra")
+library(factoextra)
+-------------------------------------------------------------
+#Visualizing k-means clusters
+
+ggplot(data = as.data.frame(custgmentation), mapping = aes(x = Age, y = Income)) + geom_point(alpha = 0.1)
+
+ggplot(data = as.data.frame(custgmentation), mapping = aes(x = Age, y = Income)) + geom_point(aes(color = factor(Edu)))
+
+fviz_cluster(km.res ,data = df)
+
+fviz_nbclust(df, kmeans, nstart = 25,  method = "gap_stat", nboot = 50)+
+    labs(subtitle = "Gap statistic method")
+
+fviz_nbclust(df, kmeans, method = "wss") +
+    geom_vline(xintercept = 4, linetype = 2)+
+    labs(subtitle = "Elbow method")
+    
+
+#Thanks you very much
