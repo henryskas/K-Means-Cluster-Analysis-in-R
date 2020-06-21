@@ -61,3 +61,4 @@ fviz_nbclust(df, kmeans, method = "wss") +
     
 
 #Thanks you very much
+#copyright henrys kasereka
